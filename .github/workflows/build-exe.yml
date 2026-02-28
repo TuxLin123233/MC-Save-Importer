@@ -17,8 +17,10 @@ jobs:
       with:
         python-version: '3.10'
     
-    - name: 安装 PyInstaller
-      run: pip install pyinstaller
+    - name: 安装依赖
+      run: |
+        pip install pyinstaller
+        pip install pillow  # 添加这一行！
     
     - name: 打包成 exe
       run: |

@@ -26,7 +26,8 @@ def zip_extract(zip_path, extract_path, name):
 
 class Box:
     def __init__(self):
-        os.makedirs(TEMP_PATH)
+        if not os.path.exists(TEMP_PATH):
+            os.makedirs(TEMP_PATH)
     
     def move_saves(self):
         """移动存档"""

@@ -26,7 +26,7 @@ def zip_extract(zip_path, extract_path, name):
 
 class Box:
     def __init__(self):
-        pass
+        os.makedirs(TEMP_PATH)
     
     def move_saves(self):
         """移动存档"""

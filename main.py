@@ -22,7 +22,7 @@ def zip_extract(zip_path, extract_path, name):
 
     # 获取原始文件(名)路径
     origin_path = os.path.join(glob.glob(os.path.join(TEMP_PATH, '*/'))[0])
-    os.system(f'move "{origin_path}" "{os.path.join(extract_path, name)}"')
+    os.system(f'move {origin_path} {os.path.join(extract_path, name)}')
 
 class Box:
     def __init__(self):
@@ -62,8 +62,8 @@ while True:
             'exit': "退出脚本",
             '1':"执行存档批量导入"
         }
-        for i in menu:
-            print(i)
+        for i,v in menu.items():
+            print(i, v)
     elif user == 'exit':
         os.system("pause")
         break

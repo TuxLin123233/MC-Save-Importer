@@ -21,6 +21,7 @@ jobs:
         run: |
           pip install -r code/requirements.txt
           pip install pyinstaller
+          pip install pillow  # ← 关键！
       
       - name: 打包成 exe
         run: |
@@ -30,5 +31,5 @@ jobs:
       - name: 上传 exe 文件
         uses: actions/upload-artifact@v4
         with:
-          name: SaveManager-Windows  # ← 改成英文名
+          name: SaveManager-Windows
           path: code/dist/*.exe

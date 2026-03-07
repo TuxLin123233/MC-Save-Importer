@@ -8,9 +8,9 @@
 
 **核心功能**：
 - 📥 **导入存档**：将下载的 ZIP 格式地图解压到 `.minecraft/saves` 文件夹
-- 📤 **导出备份**：将现有存档打包备份
-- 📋 **存档列表**：查看和管理所有存档
-- ❤️ **赞助支持**：支持开发者
+- 📤 **导出备份**：将现有存档打包备份（待实现）
+- 📋 **存档列表**：查看和管理所有存档（待实现）
+- ❤️ **赞助支持**：支持开发者（待实现）
 
 ## 技术栈
 
@@ -24,24 +24,30 @@
 
 ```
 存档管理器/
-├── code/                    # 源代码目录
-│   ├── main.py             # 程序入口点
-│   ├── gui.py              # 图形用户界面类
-│   ├── utils.py            # 工具函数（解压、文件操作等）
-│   ├── config.py           # 配置常量和导入
-│   └── img/                # 图片资源
-│       ├── steve.png       # 史蒂夫头像
-│       ├── map.png         # 地图图标
-│       ├── box.png         # 箱子图标
-│       ├── book_pen.png    # 书与笔图标
-│       └── golden_apple.png # 金苹果图标
-├── data.json               # 用户配置文件（存储 .minecraft 路径）
-├── icon.ico                # 应用程序图标
-├── requirements.txt        # Python 依赖包列表
-├── README.md               # 项目说明文档
-├── AGENTS.md               # AI 助手上下文文档（本文档）
-└── .github/workflows/      # GitHub Actions 工作流
-    └── build-exe.yml       # 自动构建 EXE 的工作流
+├── src/                    # 源代码目录
+│   ├── main.py            # 程序入口点
+│   ├── gui.py             # 图形用户界面类
+│   ├── utils.py           # 工具函数（解压、文件操作等）
+│   ├── config.py          # 配置常量和导入
+│   └── __pycache__/       # Python 字节码缓存
+├── img/                   # 图片资源目录
+│   ├── steve.png          # 史蒂夫头像
+│   ├── map.png            # 地图图标
+│   ├── box.png            # 箱子图标
+│   ├── book_pen.png       # 书与笔图标
+│   ├── golden_apple.png   # 金苹果图标
+│   └── screenshot.png     # 应用截图
+├── temp/                  # 临时文件目录（解压操作使用）
+├── .venv/                 # Python 虚拟环境
+├── .github/workflows/     # GitHub Actions 工作流
+│   └── build-exe.yml      # 自动构建 EXE 的工作流
+├── data.json              # 用户配置文件（存储 .minecraft 路径）
+├── icon.ico               # 应用程序图标
+├── requirements.txt       # Python 依赖包列表
+├── README.md              # 项目说明文档
+├── AGENTS.md              # AI 助手上下文文档（本文档）
+├── action_history.txt     # 开发动作历史记录
+└── .gitignore             # Git 忽略规则
 ```
 
 ## 环境设置
@@ -61,17 +67,22 @@ pip install -r requirements.txt
 
 ### 运行开发版本
 ```bash
-cd code
-python main.py
+cd /home/tux/编程/存档管理器
+.venv/bin/python src/main.py
 ```
 
 ### 构建可执行文件
 ```bash
-cd code
-pyinstaller -F --icon="../icon.ico" --name="存档管理器" main.py
+cd src
+pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" --add-data="../img;img" main.py
 ```
 
-构建后的可执行文件将生成在 `dist/` 目录中。
+构建后的可执行文件将生成在 `dist/` 目录中。参数说明：
+- `-F`: 打包成单个可执行文件
+- `--noconsole`: 隐藏控制台窗口（仅Windows）
+- `--icon`: 设置应用程序图标
+- `--name`: 可执行文件名称
+- `--add-data`: 包含图片资源文件夹（源路径;目标路径）
 
 ## 打包发布
 
@@ -97,7 +108,7 @@ pyinstaller -F --icon="../icon.ico" --name="存档管理器" main.py
 - **配置驱动**：用户设置存储在 data.json 中，程序状态可持久化
 
 ### 资源管理
-- **图片资源**：所有图标和图片放置在 `code/img/` 目录
+- **图片资源**：所有图标和图片放置在 `img/` 目录
 - **临时文件**：使用 `temp/` 目录处理中间文件，程序结束后清理
 - **配置文件**：`data.json` 存储用户特定的 Minecraft 路径
 
@@ -105,6 +116,10 @@ pyinstaller -F --icon="../icon.ico" --name="存档管理器" main.py
 - 使用 `try-except` 处理文件操作异常
 - 提供用户友好的错误提示消息
 - 验证用户输入和文件路径的有效性
+
+## 动作历史记录
+
+项目维护 `action_history.txt` 文件，记录重要的开发操作和变更历史。该文件采用标准化格式，包含时间戳、操作者、操作类型和详细描述。
 
 ## 注意事项
 
@@ -122,6 +137,7 @@ pyinstaller -F --icon="../icon.ico" --name="存档管理器" main.py
 - 仅支持 ZIP 格式的存档文件
 - 需要用户手动指定 .minecraft 文件夹位置
 - 界面固定为 400x290 像素，不支持调整大小
+- 部分功能（导出、列表、赞助）尚未实现
 
 ## 扩展开发
 
@@ -153,8 +169,10 @@ pyinstaller -F --icon="../icon.ico" --name="存档管理器" main.py
 - 在命令行中运行程序查看错误输出
 - 检查 `temp/` 目录中的中间文件
 - 验证 `data.json` 文件格式是否正确
+- 查看 `action_history.txt` 了解最近的变更
 
 ---
 
-*本文档最后更新：2026年3月8日*  
-*对应项目版本：基于 git commit 58f2921（小修改）*
+*本文档最后更新：2026年3月8日 07:54*  
+*对应项目版本：基于 git commit e35e64d（优化项目）*  
+*文档维护：iFlow CLI 自动化系统*

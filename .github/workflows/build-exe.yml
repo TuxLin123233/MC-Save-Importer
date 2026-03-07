@@ -1,4 +1,4 @@
-name: 打包小林工具箱
+name: 打包存档管理器
 
 on:
   push:
@@ -8,26 +8,29 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: 设置 Python
-      uses: actions/setup-python@v5  # 改成 v5，不是 v5.0
-      with:
-        python-version: '3.10'
-    
-    - name: 安装依赖
-      run: |
-        pip install pyinstaller
-        pip install pillow
-    
-    - name: 打包成 exe
-      run: |
-        pyinstaller -F --icon="icon.ico" --name="XiaoLinToolbox" code/main.py
-    
-    - name: 上传 exe 文件
-      uses: actions/upload-artifact@v4
-      with:
-        name: XiaoLinToolbox-Windows
-        path: dist/*.exe
+      - uses: actions/checkout@v3
+      
+      - name: 设置 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: |
+          pip install pyinstaller
+          pip install customtkinter
+          pip install pillow
+      
+      - name: 打包成 exe
+        run: |
+          cd code
+          pyinstaller -F --icon="../icon.ico" --name="存档管理器" --add-data "../data.json;." main.py
+          #  --add-data "../data.json;."  这行把 data.json 打包进去
+      
+      - name: 上传 exe 文件
+        uses: actions/upload-artifact@v4
+        with:
+          name: 存档管理器-Windows
+          path: code/dist/*.exe

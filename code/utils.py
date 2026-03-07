@@ -31,14 +31,6 @@ def get_image(image_name:str, size:tuple) -> ctk.CTkImage:
     Returns:
         ctk.CTkImage: 返回CTkImage
     """
-    import sys
-    img_path = os.path.join(os.path.dirname(__file__), 'img', f"{image_name}.png")
-    # 调试信息（打包后会在命令行显示）
-    print(f"当前文件: {__file__}")
-    print(f"当前目录: {os.path.dirname(__file__)}")
-    print(f"图片路径: {img_path}")
-    print(f"sys._MEIPASS: {getattr(sys, '_MEIPASS', 'Not set')}")
-
     
     pil_image = Image.open(os.path.join(os.path.dirname(__file__), 'img', f"{image_name}.png"))
 

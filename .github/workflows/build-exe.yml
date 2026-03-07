@@ -25,6 +25,7 @@ jobs:
         run: |
           cd code
           pyinstaller -F `
+            --noconsole `           # ← 隐藏终端
             --icon="../icon.ico" `
             --name="存档管理器" `
             --add-data="img;img" `

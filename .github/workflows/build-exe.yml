@@ -19,7 +19,7 @@ jobs:
       
       - name: 安装依赖
         run: |
-          pip install -r code/requirements.txt  # 一次安装所有依赖
+          pip install -r requirements.txt  # ✅ 根目录的 requirements.txt
       
       - name: 打包成 exe
         run: |

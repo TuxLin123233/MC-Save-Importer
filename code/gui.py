@@ -30,10 +30,10 @@ class App:
             row1,
             text="导入存档",
             font=ctk.CTkFont(size=20),
-            fg_color="#B03855",
-            hover_color="#9B2944",
-            text_color="#E0D9DB",
-            command=self.import_save
+            command=self.import_save,
+            fg_color="#96CA25",
+            hover_color="#88B723",
+            text_color="#EDFFEB"
         )
         btn1.pack(side="left", expand=True, fill="both", padx=10)
 
@@ -41,9 +41,9 @@ class App:
             row1, 
             text="导出备份", 
             font=ctk.CTkFont(size=20),
-            fg_color="#98C92F",
-            hover_color="#88B723",
-            text_color="#EDFFEB"
+            fg_color="#B03855",
+            hover_color="#9B2944",
+            text_color="#E0D9DB",
         )
         btn2.pack(side="left", expand=True, fill="both", padx=10)
 

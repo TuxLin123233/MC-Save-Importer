@@ -1,17 +1,23 @@
-# Python
+# 虚拟环境
+.venv/
+venv/
+env/
+ENV/
+
+# Python 缓存
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.spec
+
+# 打包文件
 dist/
 build/
-*.egg-info/
+*.spec
 
-# 虚拟环境
-venv/
-env/
-ENV/
+# IDE
+.vscode/
+.idea/
 
 # 系统文件
 .DS_Store

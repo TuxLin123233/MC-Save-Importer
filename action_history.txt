@@ -59,7 +59,15 @@
 - 操作描述: 修复GitHub Actions构建工作流中的目录路径错误，将code/改为src/以匹配项目结构调整，更新PyInstaller数据文件路径和上传路径
 - 相关文件: .github/workflows/build-exe.yml
 
+### [2026-03-08 08:15:00] - 打包环境路径修复
+- 操作者: iFlow CLI (deepseek-v3.2-chat)
+- 操作类型: 代码修复
+- 操作描述: 修复使用wine测试发现的FileNotFoundError错误，更新get_image函数和config.py中的路径处理逻辑，支持开发环境和打包环境（PyInstaller）的双重路径解析
+- 相关文件: 
+  - src/utils.py (修复get_image函数的图片路径解析)
+  - src/config.py (添加get_base_path函数，修复TEMP_PATH和DATA_PATH常量)
+
 ---
 
-*最后更新: 2026-03-08 07:54:00*
+*最后更新: 2026-03-08 08:15:00*
 *记录维护: iFlow CLI 自动化系统*

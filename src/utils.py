@@ -38,7 +38,23 @@ def get_image(image_name: str, size: tuple) -> ctk.CTkImage:
     Returns:
         ctk.CTkImage: 可缩放图像对象
     """
-    pil_image = Image.open(os.path.join('.', 'img', f"{image_name}.png"))
+    import sys
+    
+    # 检查是否在PyInstaller打包环境中运行
+    if getattr(sys, 'frozen', False):
+        # 打包环境：使用sys._MEIPASS获取临时解压目录
+        # PyInstaller会将数据文件解压到sys._MEIPASS目录
+        base_path = sys._MEIPASS # type: ignore
+        img_path = os.path.join(base_path, 'img', f"{image_name}.png")
+    else:
+        # 开发环境：图片在项目根目录的img文件夹中
+        # utils.py在src目录，所以需要../img
+        base_dir = os.path.dirname(__file__)  # src目录
+        project_root = os.path.dirname(base_dir)  # 项目根目录
+        img_path = os.path.join(project_root, 'img', f"{image_name}.png")
+    
+    pil_image = Image.open(img_path)
+    
     return ctk.CTkImage(
         light_image=pil_image,
         dark_image=pil_image,

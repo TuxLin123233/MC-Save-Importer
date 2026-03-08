@@ -67,7 +67,14 @@
   - src/utils.py (修复get_image函数的图片路径解析)
   - src/config.py (添加get_base_path函数，修复TEMP_PATH和DATA_PATH常量)
 
+### [2026-03-08 08:30:00] - 配置文件读取修复
+- 操作者: iFlow CLI (deepseek-v3.2-chat)
+- 操作类型: 代码修复
+- 操作描述: 修复wine环境下点击导入存档按钮失败的FileNotFoundError问题，增强read_data()和write_data()函数的健壮性，添加文件存在性检查和错误处理，确保在data.json文件不存在时能返回默认配置并自动创建
+- 相关文件: 
+  - src/utils.py (修复read_data()和write_data()函数，添加文件存在性检查、目录创建和错误处理)
+
 ---
 
-*最后更新: 2026-03-08 08:15:00*
+*最后更新: 2026-03-08 08:30:00*
 *记录维护: iFlow CLI 自动化系统*

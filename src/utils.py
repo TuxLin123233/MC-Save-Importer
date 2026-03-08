@@ -82,15 +82,35 @@ def write_data(data: dict) -> None:
     Args:
         data (dict): 要写入的数据字典
     """
-    with open(DATA_PATH, 'w', encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    try:
+        # 确保目录存在
+        data_dir = os.path.dirname(DATA_PATH)
+        if data_dir and not os.path.exists(data_dir):
+            os.makedirs(data_dir, exist_ok=True)
+        
+        # 写入数据
+        with open(DATA_PATH, 'w', encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+    except (IOError, OSError, json.JSONEncodeError) as e: # type: ignore
+        # 记录错误但不影响程序运行（可以添加日志记录）
+        print(f"写入配置文件失败: {e}")
+        # 可以选择重新抛出异常或静默处理
+        raise
 
 
 def read_data() -> dict:
     """从配置文件读取数据
 
     Returns:
-        dict: 配置数据字典
+        dict: 配置数据字典，如果文件不存在则返回默认配置
     """
-    with open(DATA_PATH, 'r', encoding='utf-8') as f:
-        return json.load(f)
+    if not os.path.exists(DATA_PATH):
+        # 文件不存在，返回默认配置
+        return {"minecraft_path": ""}
+    
+    try:
+        with open(DATA_PATH, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError):
+        # 文件损坏或读取失败，返回默认配置
+        return {"minecraft_path": ""}

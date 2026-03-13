@@ -41,14 +41,49 @@
 
 ## 📦 自行打包
 
+### 基础打包
+
 ```bash
 # 安装依赖
 pip install -r requirements.txt
 
 # 打包
-cd code
-pyinstaller -F --icon="../icon.ico" --name="存档管理器" main.py
+cd src
+pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" --add-data="../img;img" --add-data="../fonts;fonts" main.py
 ```
+
+### 使用 UPX 压缩（可选）
+
+UPX 是一个可执行文件压缩工具，可以显著减小 exe 文件的大小（通常可减少 50-70%）。
+
+#### Windows
+
+```bash
+# 1. 下载 UPX
+# 访问 https://github.com/upx/upx/releases 下载 Windows 版本
+# 解压后获得 upx.exe
+
+# 2. 使用 UPX 打包
+cd src
+pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" --add-data="../img;img" --add-data="../fonts;fonts" --upx-dir="../upx-路径" main.py
+```
+
+#### Linux/macOS
+
+```bash
+# 安装 UPX
+# Ubuntu/Debian: sudo apt-get install upx
+# macOS: brew install upx
+
+# 使用 UPX 打包
+cd src
+pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" --add-data="../img;img" --add-data="../fonts;fonts" main.py
+```
+
+**注意事项**：
+- UPX 压缩会增加约 10-20% 的启动时间
+- 某些杀毒软件可能会误报压缩后的 exe
+- 如果压缩失败，可以去掉 `--upx-dir` 参数使用基础打包
 
 ## 🙏 致谢
 

@@ -32,7 +32,14 @@ def get_font_path(font_name):
     Returns:
         str: 字体文件的完整绝对路径
     """
-    return os.path.join(FONTS_PATH, font_name)
+    # 检查是否在PyInstaller打包环境中运行
+    if getattr(sys, 'frozen', False):
+        # 打包环境：使用sys._MEIPASS获取临时解压目录
+        base_path = sys._MEIPASS # type: ignore
+        return os.path.join(base_path, 'fonts', font_name)
+    else:
+        # 开发环境：使用项目根目录的fonts文件夹
+        return os.path.join(FONTS_PATH, font_name)
 
 # 获取基础路径(即以项目为开头)
 BASE_PATH = get_base_path()
@@ -43,7 +50,7 @@ TEMP_PATH = os.path.join(BASE_PATH, 'temp')
 # 数据文件路径
 DATA_PATH = os.path.join(BASE_PATH, 'data.json')
 
-# 字体文件夹路径
+# 字体文件夹路径（仅用于开发环境）
 FONTS_PATH = os.path.join(BASE_PATH, 'fonts')
 
 # 字体文件

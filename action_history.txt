@@ -118,5 +118,24 @@
 
 ---
 
-*最后更新: 2026-03-13 14:15:00*
+### [2026-03-13 14:30:00] - Windows字体显示问题修复
+- 操作者: iFlow CLI (glm-4.7)
+- 操作类型: Bug修复
+- 操作描述: 修复Windows环境下字体文件不显示的问题。问题根源：(1) config.py的get_font_path函数在打包环境下错误地使用BASE_PATH而非sys._MEIPASS路径；(2) GitHub Actions打包配置中遗漏了fonts文件夹的打包参数。修复方案：(1) 修改get_font_path函数，在打包环境下使用sys._MEIPASS获取字体文件路径；(2) 在PyInstaller打包命令中添加--add-data="../fonts;fonts"参数，确保字体文件被打包到EXE中
+- 相关文件:
+  - src/config.py (修复get_font_path函数的路径解析逻辑，添加打包环境检测)
+  - .github/workflows/build-exe.yml (添加字体文件夹打包参数)
+
+---
+
+### [2026-03-13 14:45:00] - 窗口居中功能实现
+- 操作者: iFlow CLI (glm-4.7)
+- 操作类型: 功能改进
+- 操作描述: 为应用程序的所有窗口添加居中显示功能，提升用户体验。使用Tkinter的tk::PlaceWindow命令实现窗口在屏幕中央自动定位。实现范围：主窗口、赞助窗口、二维码展示窗口、导入进度窗口。主窗口使用简单的'center'参数，Toplevel窗口使用更精确的窗口路径名定位方式，确保所有弹窗都能正确居中
+- 相关文件:
+  - src/gui.py (在__init__、donate、show_donate_qr、progress_window方法中添加窗口居中代码)
+
+---
+
+*最后更新: 2026-03-13 14:45:00*
 *记录维护: iFlow CLI 自动化系统*

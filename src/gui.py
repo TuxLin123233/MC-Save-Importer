@@ -13,6 +13,7 @@ class App:
         self.window.title("🗃 存档管理器")
         self.window.geometry("400x290")
         self.window.resizable(False, False)
+        self.window.eval('tk::PlaceWindow . center')
 
         ctk.set_appearance_mode("light")
 
@@ -236,6 +237,7 @@ class App:
         donate_win.geometry("250x230")
         donate_win.transient(self.window)   # 置顶于主窗口
         donate_win.resizable(False, False)
+        donate_win.tk.call('tk::PlaceWindow', donate_win.winfo_pathname(donate_win.winfo_id()), 'center')
         
         header_frame = ctk.CTkFrame(
             donate_win,
@@ -340,6 +342,7 @@ class App:
         qr_win = ctk.CTkToplevel(parent_win)
         qr_win.geometry("250x250")
         qr_win.transient(parent_win)    # 置顶于父窗口
+        qr_win.tk.call('tk::PlaceWindow', qr_win.winfo_pathname(qr_win.winfo_id()), 'center')
         
         if platform == "wechat":
             qr_win.title("微信赞赏码")
@@ -373,6 +376,9 @@ class App:
         progress_win.geometry("400x200")
         progress_win.transient(self.window)  # 置顶于主窗口
         progress_win.grab_set()  # 模态窗口
+        progress_win.tk.call('tk::PlaceWindow', progress_win.winfo_pathname(progress_win.winfo_id()), 'center')
+
+        
 
         ctk.CTkLabel(
             progress_win,

@@ -50,6 +50,10 @@ cd code
 pyinstaller -F --icon="../icon.ico" --name="存档管理器" main.py
 ```
 
+## 🙏 致谢
+
+本项目图标来源于 [Yesicon](https://yesicon.app/)，遵循各图库开源许可证，特此致谢。
+
 ## 📄 许可证
 
 MIT License © 2026 TuxLin123233

@@ -37,6 +37,9 @@
 │   ├── book_pen.png       # 书与笔图标
 │   ├── golden_apple.png   # 金苹果图标
 │   └── screenshot.png     # 应用截图
+├── fonts/                 # 字体资源目录
+│   ├── HarmonyOS_Sans_SC_Medium.ttf   # HarmonyOS Sans SC Medium 字体
+│   └── HarmonyOS_Sans_SC_Regular.ttf  # HarmonyOS Sans SC Regular 字体
 ├── temp/                  # 临时文件目录（解压操作使用）
 ├── .venv/                 # Python 虚拟环境
 ├── .github/workflows/     # GitHub Actions 工作流
@@ -173,6 +176,6 @@ pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" --add-d
 
 ---
 
-*本文档最后更新：2026年3月8日 07:54*  
-*对应项目版本：基于 git commit e35e64d（优化项目）*  
+*本文档最后更新：2026年3月13日*  
+*对应项目版本：基于 git commit ef7eaa1（配置文件读取修复）*  
 *文档维护：iFlow CLI 自动化系统*

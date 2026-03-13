@@ -73,7 +73,10 @@ def folder_dialog(title: str) -> str:
     """
     folder_path = filedialog.askdirectory(title=title, mustexist=True)
     # 如果用户取消了对话框，返回空字符串；否则返回选择的路径
-    return folder_path if folder_path else ""
+    if folder_path:
+        return folder_path
+    else:
+        return ""
 
 
 def write_data(data: dict) -> None:

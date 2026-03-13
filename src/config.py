@@ -11,7 +11,11 @@ import customtkinter as ctk
 
 
 def get_base_path():
-    """获取基础路径，支持开发环境和打包环境"""
+    """获取基础路径，支持开发环境和打包环境
+
+    Returns:
+        str: 基础路径字符串，开发环境返回项目根目录，打包环境返回可执行文件所在目录
+    """
     if getattr(sys, 'frozen', False):
         # 打包环境：使用可执行文件所在目录
         return os.path.dirname(sys.executable)
@@ -19,8 +23,18 @@ def get_base_path():
         # 开发环境：使用项目根目录
         return os.path.dirname(os.path.dirname(__file__))
 
+def get_font_path(font_name):
+    """获取字体文件完整路径
 
-# 获取基础路径
+    Args:
+        font_name (str): 字体文件名称（含扩展名）
+
+    Returns:
+        str: 字体文件的完整绝对路径
+    """
+    return os.path.join(FONTS_PATH, font_name)
+
+# 获取基础路径(即以项目为开头)
 BASE_PATH = get_base_path()
 
 # 临时文件夹路径
@@ -28,3 +42,10 @@ TEMP_PATH = os.path.join(BASE_PATH, 'temp')
 
 # 数据文件路径
 DATA_PATH = os.path.join(BASE_PATH, 'data.json')
+
+# 字体文件夹路径
+FONTS_PATH = os.path.join(BASE_PATH, 'fonts')
+
+# 字体文件
+FONT_REGULAR = get_font_path("HarmonyOS_Sans_SC_Regular.ttf")
+FONT_MEDIUM = get_font_path("HarmonyOS_Sans_SC_Medium.ttf")

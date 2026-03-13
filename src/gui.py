@@ -13,7 +13,6 @@ class App:
         self.window.title("🗃 存档管理器")
         self.window.geometry("400x290")
         self.window.resizable(False, False)
-        self.window.eval('tk::PlaceWindow . center')
 
         ctk.set_appearance_mode("light")
 
@@ -22,8 +21,8 @@ class App:
         ctk.FontManager.load_font(FONT_MEDIUM_PATH)
         
         # 设置组件字体
-        self.font_button = ctk.CTkFont(family=FONT_MEDIUM_NAME, size=16)
-        self.font_header = ctk.CTkFont(family=FONT_MEDIUM_NAME, size=24, weight="bold")
+        self.font_button = ctk.CTkFont(family=FONT_REGULAR_NAME, size=16)
+        self.font_header = ctk.CTkFont(family=FONT_MEDIUM_NAME, size=24)
         self.font_label = ctk.CTkFont(family=FONT_REGULAR_NAME, size=14)
         
         self.create_header()    # 标题部分
@@ -241,7 +240,6 @@ class App:
         donate_win.geometry("250x230")
         donate_win.transient(self.window)   # 置顶于主窗口
         donate_win.resizable(False, False)
-        donate_win.tk.call('tk::PlaceWindow', donate_win.winfo_pathname(donate_win.winfo_id()), 'center')
         
         header_frame = ctk.CTkFrame(
             donate_win,

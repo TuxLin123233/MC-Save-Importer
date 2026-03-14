@@ -1,6 +1,6 @@
 from config import *
 from utils import *
-
+from playsound3 import playsound
 
 class App:
     def __init__(self):
@@ -9,8 +9,9 @@ class App:
         Returns:
             None
         """
+        playsound(get_sound_path('click.mp3'), block=False)
         self.window = ctk.CTk()
-        self.window.title("🗃 存档管理器")
+        self.window.title("Minecraft 存档管理器")
         self.window.geometry("550x290")
         self.window.resizable(False, False)
         self.window.configure(fg_color="#E0E5EC")
@@ -41,14 +42,14 @@ class App:
         header_frame = ctk.CTkFrame(self.window, fg_color="transparent")
         header_frame.pack(pady=20)
 
-        steve_image = get_image('box', size=(32, 32))
+        steve_image = get_image('icon', size=(32, 32))
         image_label = ctk.CTkLabel(header_frame, image=steve_image, text="")
-        image_label.pack(side='left', padx=(0, 5), pady=(5, 0))
+        image_label.pack(side='left', padx=(0, 10))
 
         # 大标题
         title = ctk.CTkLabel(
             header_frame,
-            text="Minecraft 存档管理器",
+            text="存档管理器",
             font=self.font_header,
             text_color="#333333",
         )
@@ -79,8 +80,8 @@ class App:
             "font": self.font_button,
             "compound": "bottom",    # 文字在底部，图片在顶部
             "anchor": "center",      # 整体居中
-            "border_width": 2,
-            "border_color": "#CFCFCF",
+            "border_width": 4,
+            "border_color": "#B3B3B3",
             "corner_radius": 13,
         }
         
@@ -143,7 +144,7 @@ class App:
             text="赞助一下",
             command=self.donate,
             fg_color="#6E9D28",
-            hover_color="#5C861C",
+            hover_color="#638F22",
             text_color="#F7FFEC",
             image=get_image('donate', (30, 30)),
             **btn_config,
@@ -243,6 +244,7 @@ class App:
         # ====== 第七步：完成导入 ======
         # 完成后关闭进度条窗口
         progress_win.destroy()
+        playsound(get_sound_path('click.mp3'), block=False)
         messagebox.showinfo("完成", f"成功导入 {total} 个存档")
 
     def donate(self):
@@ -253,7 +255,7 @@ class App:
         """
         donate_win = ctk.CTkToplevel(self.window)
         donate_win.title("感谢支持")
-        donate_win.geometry("250x230")
+        donate_win.geometry("340x230")
         donate_win.transient(self.window)   # 置顶于主窗口
         donate_win.resizable(False, False)
         self.center_window(donate_win)  # 窗口居中
@@ -340,13 +342,15 @@ class App:
         separator.pack(fill="x", padx=20, pady=5)
         
         # 协议文本
-        licence_text = ctk.CTkLabel(
+        licence_text = "图标：Tabler Icons (MIT)\n音效：Pixabay.com\n字体：HarmonyOS Sans (免费商用)"
+        
+        licence = ctk.CTkLabel(
             donate_win,
-            text="图标来源：Tabler Icons (MIT)",
+            text=licence_text,
             font=self.font_label,
-            text_color="#888888"
+            text_color="#888888",
         )
-        licence_text.pack(side="bottom", pady=(0, 5))
+        licence.pack(pady=(0, 5))
 
     def show_donate_qr(self, platform:str, parent_win:ctk.CTkToplevel):
         """展示赞助码二维码窗口
@@ -438,7 +442,7 @@ class App:
         Returns:
             None
         """
-        if getattr(sys, 'frozen', False):
+        if os.name == "nt":
             window.update_idletasks()  # 确保窗口尺寸已计算
             window.after(50, lambda: window.tk.call(
                 'tk::PlaceWindow',

@@ -217,7 +217,14 @@
 - 相关文件:
   - src/gui.py (重新排列create_buttons方法中的按钮顺序)
 
+### [2026-03-14 12:00:00] - GitHub Actions构建配置更新
+- 操作者: iFlow CLI (glm-4.7)
+- 操作类型: CI/CD配置更新
+- 操作描述: 根据项目结构更新GitHub Actions构建工作流，添加sounds文件夹的打包参数。项目新增了sounds/目录，包含音效文件（click.mp3），需要在PyInstaller打包时将其包含到EXE中，确保程序在打包后能够正常播放音效
+- 相关文件:
+  - .github/workflows/build-exe.yml (添加--add-data="../sounds;sounds"参数)
+
 ---
 
-*最后更新: 2026-03-14 10:00:00*
+*最后更新: 2026-03-14 12:00:00*
 *记录维护: iFlow CLI 自动化系统*

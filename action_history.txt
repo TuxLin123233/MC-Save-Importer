@@ -224,7 +224,21 @@
 - 相关文件:
   - .github/workflows/build-exe.yml (添加--add-data="../sounds;sounds"参数)
 
+### [2026-03-14 13:00:00] - 音频播放库依赖添加
+- 操作者: iFlow CLI (glm-4.7)
+- 操作类型: 依赖管理
+- 操作描述: 为项目添加playsound3音频播放库依赖，支持程序内的音效播放功能。添加内容：在requirements.txt中添加playsound3库，确保GitHub Actions构建时能自动安装该库，实现点击音效等音频功能
+- 相关文件:
+  - requirements.txt (添加playsound3)
+
+### [2026-03-14 13:30:00] - PyInstaller 隐藏导入配置
+- 操作者: iFlow CLI (glm-4.7)
+- 操作类型: 构建配置优化
+- 操作描述: 为 PyInstaller 打包添加 playsound3 库的隐藏导入参数，确保音频播放功能在打包后的 exe 中能正常工作。添加内容：在 GitHub Actions 工作流的 PyInstaller 命令中添加 --hidden-import=playsound3 和 --hidden-import=playsound3.__main__ 参数，防止打包时遗漏依赖模块
+- 相关文件:
+  - .github/workflows/build-exe.yml (添加 playsound3 的 hidden-imports 参数)
+
 ---
 
-*最后更新: 2026-03-14 12:00:00*
+*最后更新: 2026-03-14 13:30:00*
 *记录维护: iFlow CLI 自动化系统*

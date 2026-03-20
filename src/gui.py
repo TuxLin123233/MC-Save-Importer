@@ -33,9 +33,6 @@ class App:
 
         # 窗口居中
         center_window(self.window)
-        
-        # 判断是否存档迁移(默认: False)
-        self.migrate = False
 
     def create_header(self):
         """创建标题区域，显示应用名称和图标
@@ -173,18 +170,31 @@ class App:
         Returns:
             None
         """
-        # ====== 第一步：获取.minecraft路径 ======
+        # 获取.minecraft路径
         data = read_data()  # 获取数据文件
         minecraft_path = data['minecraft_path'] # 获取.minecraft文件夹
+        migrate = data['migrate']
+        
         saves_path:str = ""
 
-        # ====== 第二步：检查并确认.minecraft路径 ======
+        # 检查并确认.minecraft路径
         
         # 检查用户是否已经保存过.minecraft文件夹路径
-        if minecraft_path:  # 用户已记录minecraft文件夹路径
-            # ====== 第三步：选择ZIP文件夹 ======
+        if minecraft_path and not migrate:  # 用户已记录一个没有版本迁移minecraft文件夹路径
+            # 选择ZIP文件夹
             zip_folder_path = folder_dialog("选择存放地图ZIP的文件夹")
             # 如果用户取消了文件夹选择，直接返回
+            if not zip_folder_path:
+                return
+        elif minecraft_path and migrate:    # 用户已记录一个版本迁移的
+            # 选择版本
+            select_version = self.select_version_saves(minecraft_path)
+            if not select_version:
+                return 
+            else:
+                saves_path = str(Path(minecraft_path, 'versions', select_version, 'saves'))
+            # 选择ZIP文件夹
+            zip_folder_path = folder_dialog("选择存放地图ZIP的文件夹")
             if not zip_folder_path:
                 return
         else:  # 如果没有记录
@@ -208,11 +218,17 @@ class App:
                 data['minecraft_path'] = minecraft_path
                 if check['migrate']:    # 如果是版本迁移
                     data['migrate'] = True
-                else:
+                    select_version = self.select_version_saves(minecraft_path)
+                    if not select_version:
+                        # 保存文件
+                        write_data(data)
+                        return
+                    else:
+                        saves_path = str(Path(minecraft_path, 'versions', select_version, 'saves'))
+                else:   # 不是版本迁移
                     saves_path = str(Path(minecraft_path, 'saves'))
-                    
-                # 保存文件
-                write_data(data)
+                    # 保存文件
+                    write_data(data)
             else:
                 # 用户取消或提供的路径无效，直接返回
                 Message(self.window).info(
@@ -227,13 +243,12 @@ class App:
                 "成功! 现在来导入地图",
                 self.font_label
             )
-            # ====== 第三步：选择ZIP文件夹 ======
+            # 选择ZIP文件夹
             zip_folder_path = folder_dialog("选择存放地图ZIP的文件夹")
             # 检查用户是否取消了第二次文件夹选择
             if not zip_folder_path: return # 用户取消了
 
-        # ====== 第四步：获取ZIP文件列表 ======
-        # 获取所有ZIP文件
+        # 获取ZIP文件列表
         zip_files = list(Path(zip_folder_path).glob('*.zip'))
         # 检查是否在选择的文件夹中找到任何ZIP文件
         if not zip_files:
@@ -244,21 +259,29 @@ class App:
             )
             return
 
-        # ====== 第五步：创建进度窗口 ======
+        # 创建进度窗口
         progress_win, progress_bar, progress_label, file_label = self.progress_window("导入存档")
         total = len(zip_files)
 
-        # ====== 第六步：解压ZIP文件 ======
+        # 解压ZIP文件
         for i, zip_file in enumerate(zip_files, 1):
             # 获取ZIP文件名（不含扩展名）
             name = Path(zip_file).stem
+            target = Path(saves_path) / name
+            
+            if target.exists():
+                result = Message(self.window).yes_no("存档已存在", f"{name} 存档已存在，是否覆盖", self.font_label)
+                if not result:  # 不要覆盖
+                    continue    # 进行跳过
+                else:   # 进行覆盖
+                    shutil.rmtree(target)
             
             # 更新进度显示
             file_label.configure(text=f"正在处理世界: {name}")
             progress_bar.set(i / total)
             progress_label.configure(text=f"{int(i / total * 100)}% ({i}/{total})")
             progress_win.update()
-
+                
             # 执行解压操作
             zip_extract(
                 zip_path=str(zip_file),
@@ -266,29 +289,123 @@ class App:
                 name=name
             )
 
-        # ====== 第七步：完成导入 ======
         # 完成后关闭进度条窗口
         progress_win.destroy()
-        playsound(path_config.get_sound_path('finish.mp3'), block=False)
         Message(self.window).info(
             "完成",
             f"成功导入 {total} 个存档",
             self.font_label
         )
-
-    def select_version_saves(self, minecraft_path) -> bool:
+    
+    def select_version_saves(self, minecraft_path) -> str:
+        btn_config = {
+            "width": 90,
+            "height": 40,
+            "anchor": "center",      # 整体居中
+            "border_width": 2,
+            "border_color": "#CFCFCF",
+            "corner_radius": 13,
+        }
+        
         """让用户选择要迁移到哪个版本"""
         # 获取版本列表
+        if not Path(minecraft_path, 'versions').exists():
+            return ""
+        
         versions_folders = Path(minecraft_path, 'versions').iterdir()
         versions_names = [p.name for p in versions_folders]
-        if len(versions_names) == 0:
-            return False
+        if not versions_names:
+            return ""
         
         # 创建窗口
-        win = ctk.CTkToplevel(self.window)
+        win = ctk.CTkToplevel(
+            self.window,
+        )
+        win.title("选择你的游戏版本")
         
-        return True
+        # 动态计算窗口大小
+        item_height = 35  # 每个选项占的高度
+        button_height = 60  # 确定按钮占的高度
+        max_height = 500  # 最大高度
         
+        win_height = min(
+            len(versions_names) * item_height + button_height,
+            max_height
+        )
+        
+        win.geometry(f"400x{win_height}")
+        
+        # 模态化和置顶主窗口
+        win.after(100, win.grab_set)  # 延迟设置模
+        win.transient(self.window)
+        
+        # 居中窗口
+        center_window(win)
+        
+        # 遍历列表
+        selected_version = ctk.StringVar(value="")  # 绑定选择结果
+        
+        for name in versions_names:
+            frame = ctk.CTkFrame(
+                master=win,
+                fg_color="transparent"
+            )
+            frame.pack(pady=(3, 3))
+            
+            # 文字标签
+            label = ctk.CTkLabel(
+                frame,
+                text=name,
+                font=self.font_button,
+            )
+            label.pack(side="left")
+
+            # 单选按钮
+            radio = ctk.CTkRadioButton(
+                frame,
+                variable=selected_version,
+                value=name,
+                width=20,
+                text="",
+            )
+            radio.pack(side="left", padx=(10, 0))
+        
+        # 设置初始值为空，避免因为选择了后关闭窗口，还会返回有效值
+        result = ""
+        
+        def on_confirm():
+            nonlocal result
+            result = selected_version.get()
+            win.destroy()
+        
+        buttons_frame = ctk.CTkFrame(
+            win, 
+            fg_color="transparent"
+        )
+        
+        buttons_frame.pack(pady=(5, 0))
+        
+        yes_button = ctk.CTkButton(
+            buttons_frame,
+            text="确认",
+            fg_color="#86aa19",
+            hover_color="#799b16",
+            command=on_confirm,
+            **btn_config
+        )
+        no_button = ctk.CTkButton(
+            buttons_frame,
+            text="取消",
+            command=win.destroy,
+            **btn_config
+        )
+        
+        yes_button.pack(side="left", padx=(0, 15))
+        no_button.pack(side="left")
+        
+        win.wait_window()
+        
+        return result
     
     def donate(self):
         """赞助功能，显示捐赠窗口，提供微信和支付宝支付选项

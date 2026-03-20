@@ -9,29 +9,33 @@ class App:
         Returns:
             None
         """
-        playsound(get_sound_path('click.mp3'), block=False)
+        
+        playsound(path_config.get_sound_path('start.mp3'), block=False)
         self.window = ctk.CTk()
-        self.window.title("Minecraft 存档管理器")
         self.window.geometry("550x290")
+        self.window.title("Minecraft 存档管理器")
         self.window.resizable(False, False)
         self.window.configure(fg_color="#E0E5EC")
         
         ctk.set_appearance_mode("light")
 
         # 加载字体文件
-        ctk.FontManager.load_font(FONT_REGULAR_PATH)
-        ctk.FontManager.load_font(FONT_MEDIUM_PATH)
+        ctk.FontManager.load_font(str(path_config.FONT_REGULAR_PATH))
+        ctk.FontManager.load_font(str(path_config.FONT_MEDIUM_PATH))
 
         # 设置组件字体
-        self.font_button = ctk.CTkFont(family=FONT_REGULAR_NAME, size=16)
-        self.font_header = ctk.CTkFont(family=FONT_MEDIUM_NAME, size=24)
-        self.font_label = ctk.CTkFont(family=FONT_REGULAR_NAME, size=14)
+        self.font_button = ctk.CTkFont(family=path_config.FONT_REGULAR_NAME, size=16)
+        self.font_header = ctk.CTkFont(family=path_config.FONT_MEDIUM_NAME, size=24)
+        self.font_label = ctk.CTkFont(family=path_config.FONT_REGULAR_NAME, size=14)
 
         self.create_header()    # 标题部分
         self.create_buttons()   # 按钮部分
 
         # 窗口居中
-        self.center_window(self.window)
+        center_window(self.window)
+        
+        # 判断是否存档迁移(默认: False)
+        self.migrate = False
 
     def create_header(self):
         """创建标题区域，显示应用名称和图标
@@ -84,7 +88,6 @@ class App:
             "border_color": "#B3B3B3",
             "corner_radius": 13,
         }
-        
         
         # 第一行按钮：导入存档
         import_save = ctk.CTkButton(
@@ -164,8 +167,6 @@ class App:
         )
         about.pack(side="left", padx=12)
         
-        
-
     def import_save(self):
         """导入存档功能，将ZIP格式的地图文件解压到Minecraft的saves文件夹
 
@@ -175,8 +176,10 @@ class App:
         # ====== 第一步：获取.minecraft路径 ======
         data = read_data()  # 获取数据文件
         minecraft_path = data['minecraft_path'] # 获取.minecraft文件夹
+        saves_path:str = ""
 
         # ====== 第二步：检查并确认.minecraft路径 ======
+        
         # 检查用户是否已经保存过.minecraft文件夹路径
         if minecraft_path:  # 用户已记录minecraft文件夹路径
             # ====== 第三步：选择ZIP文件夹 ======
@@ -186,26 +189,44 @@ class App:
                 return
         else:  # 如果没有记录
             # 询问用户是否愿意提供.minecraft文件夹路径
-            result = messagebox.askyesno(
+            result = Message(self.window).yes_no(
                 "温馨提示",
-                "导入存档前，请告诉我你的.minecraft文件夹地址"
+                "导入存档前，请告诉我你的.minecraft文件夹地址",
+                self.font_label
             )
             if not result: return 
-            minecraft_path = folder_dialog("选择.minecraft文件夹")
+            
+            minecraft_path:str = folder_dialog("选择.minecraft文件夹")
             # 检查用户是否选择了文件夹（可能点击了取消）
             if not minecraft_path: return
 
+            check:dict = is_minecraft_folder(minecraft_path)
+            
             # 检查用户是否确认并提供有效的.minecraft/saves文件夹
-            if result and os.path.exists(os.path.join(minecraft_path, 'saves')):
+            if result and check['find']:
                 # 保存minecraft路径到配置文件
                 data['minecraft_path'] = minecraft_path
+                if check['migrate']:    # 如果是版本迁移
+                    data['migrate'] = True
+                else:
+                    saves_path = str(Path(minecraft_path, 'saves'))
+                    
+                # 保存文件
                 write_data(data)
             else:
                 # 用户取消或提供的路径无效，直接返回
-                messagebox.showerror("错误", "不是有效的.minecraft文件夹")
+                Message(self.window).info(
+                    "错误",
+                    "不是有效的.minecraft文件夹",
+                    self.font_label
+                )
                 return
 
-            messagebox.showinfo("提示", "成功! 现在来导入地图")
+            Message(self.window).info(
+                "提示",
+                "成功! 现在来导入地图",
+                self.font_label
+            )
             # ====== 第三步：选择ZIP文件夹 ======
             zip_folder_path = folder_dialog("选择存放地图ZIP的文件夹")
             # 检查用户是否取消了第二次文件夹选择
@@ -213,10 +234,14 @@ class App:
 
         # ====== 第四步：获取ZIP文件列表 ======
         # 获取所有ZIP文件
-        zip_files = glob.glob(os.path.join(zip_folder_path, '*.zip'))
+        zip_files = list(Path(zip_folder_path).glob('*.zip'))
         # 检查是否在选择的文件夹中找到任何ZIP文件
         if not zip_files:
-            messagebox.showwarning("提示", "选择的文件夹中没有找到ZIP文件")
+            Message(self.window).info(
+                "错误",
+                "选择的文件夹中没有找到ZIP文件",
+                self.font_label
+            )
             return
 
         # ====== 第五步：创建进度窗口 ======
@@ -226,7 +251,7 @@ class App:
         # ====== 第六步：解压ZIP文件 ======
         for i, zip_file in enumerate(zip_files, 1):
             # 获取ZIP文件名（不含扩展名）
-            name = os.path.splitext(os.path.basename(zip_file))[0]
+            name = Path(zip_file).stem
             
             # 更新进度显示
             file_label.configure(text=f"正在处理世界: {name}")
@@ -236,17 +261,35 @@ class App:
 
             # 执行解压操作
             zip_extract(
-                zip_path=zip_file,
-                extract_path=os.path.join(minecraft_path, 'saves'),
+                zip_path=str(zip_file),
+                extract_path=str(saves_path),
                 name=name
             )
 
         # ====== 第七步：完成导入 ======
         # 完成后关闭进度条窗口
         progress_win.destroy()
-        playsound(get_sound_path('click.mp3'), block=False)
-        messagebox.showinfo("完成", f"成功导入 {total} 个存档")
+        playsound(path_config.get_sound_path('click.mp3'), block=False)
+        Message(self.window).info(
+            "完成",
+            f"成功导入 {total} 个存档",
+            self.font_label
+        )
 
+    def select_version_saves(self, minecraft_path) -> bool:
+        """让用户选择要迁移到哪个版本"""
+        # 获取版本列表
+        versions_folders = Path(minecraft_path, 'versions').iterdir()
+        versions_names = [p.name for p in versions_folders]
+        if len(versions_names) == 0:
+            return False
+        
+        # 创建窗口
+        win = ctk.CTkToplevel(self.window)
+        
+        return True
+        
+    
     def donate(self):
         """赞助功能，显示捐赠窗口，提供微信和支付宝支付选项
 
@@ -258,7 +301,7 @@ class App:
         donate_win.geometry("340x230")
         donate_win.transient(self.window)   # 置顶于主窗口
         donate_win.resizable(False, False)
-        self.center_window(donate_win)  # 窗口居中
+        center_window(donate_win)  # 窗口居中
         
         header_frame = ctk.CTkFrame(
             donate_win,
@@ -365,7 +408,7 @@ class App:
         qr_win = ctk.CTkToplevel(parent_win)
         qr_win.geometry("250x250")
         qr_win.transient(parent_win)    # 置顶于父窗口
-        self.center_window(qr_win)  # 窗口居中
+        center_window(qr_win)  # 窗口居中
         
         if platform == "wechat":
             qr_win.title("微信赞赏码")
@@ -381,8 +424,7 @@ class App:
     
         qr_label.pack(expand=True)
         # 延迟设置模态，避免 grab failed
-        qr_win.after(100, qr_win.grab_set)
-            
+        qr_win.after(100, qr_win.grab_set)         
     
     def progress_window(self, text: str):
         """创建进度条窗口
@@ -399,7 +441,7 @@ class App:
         progress_win.geometry("400x200")
         progress_win.transient(self.window)  # 置顶于主窗口
         progress_win.grab_set()  # 模态窗口
-        self.center_window(progress_win)  # 窗口居中
+        center_window(progress_win)  # 窗口居中
 
         
 
@@ -433,30 +475,17 @@ class App:
 
         return progress_win, progress_bar, progress_label, file_label
 
-    def center_window(self, window):
-        """让窗口居中显示
-
-        Args:
-            window: 窗口对象
-
-        Returns:
-            None
-        """
-        if os.name == "nt":
-            window.update_idletasks()  # 确保窗口尺寸已计算
-            window.after(50, lambda: window.tk.call(
-                'tk::PlaceWindow',
-                window.winfo_pathname(window.winfo_id()),
-                'center'
-            ))
-
     def export_save(self):
         """导出存档功能（待实现）
 
         Returns:
             None
         """
-        messagebox.showinfo("功能开发中", "导出存档功能正在开发中，敬请期待！")
+        Message(self.window).info(
+            "功能开发中",
+            "导出存档功能正在开发中，敬请期待！",
+            self.font_label
+        )
 
     def list_saves(self):
         """存档列表功能（待实现）
@@ -464,4 +493,120 @@ class App:
         Returns:
             None
         """
-        messagebox.showinfo("功能开发中", "存档列表功能正在开发中，敬请期待！")
+        Message(self.window).info(
+            "功能开发中",
+            "存档列表功能正在开发中，敬请期待！",
+            self.font_label
+        )
+
+class Message:
+    def __init__(self, parent_window:ctk.CTk) -> None:
+        self.window = ctk.CTkToplevel(parent_window)
+        self.window.configure(fg_color="#D3D3D3")
+        
+        # 置顶于父窗口
+        self.window.transient(parent_window)
+        
+        # 用于保存用户按钮按下的内容
+        self.result = False
+        
+        self.btn_config = {
+            "width": 90,
+            "height": 40,
+            "anchor": "center",      # 整体居中
+            "border_width": 2,
+            "border_color": "#CFCFCF",
+            "corner_radius": 13,
+        }
+    
+    def on_confirm(self, value:bool=False):
+        # 确认操作
+        self.result = value
+        self.window.destroy()
+    
+    def info(self, title:str, text:str, font:ctk.CTkFont):
+        """消息通知框"""
+        self.window.title(title)
+        
+        # 启动音效
+        playsound(path_config.get_sound_path('start.mp3'), block=False)
+        
+        # 通知框文本
+        content = ctk.CTkLabel(
+            self.window,
+            text=text,
+            font=font
+        )
+        content.pack(pady=(5, 0))
+        
+        # 确定按钮
+        confirm_button = ctk.CTkButton(
+            self.window,
+            text="确定",
+            font=font,
+            fg_color="#5E5E5E",
+            hover_color="#505050",
+            command=lambda:self.on_confirm(True), 
+            **self.btn_config
+        )
+        confirm_button.pack(pady=(10, 0))
+        
+        # 调整窗口大小
+        auto_label_window_width(content, self.window, 95)
+        center_window(self.window)
+        
+        # 模态化窗口
+        self.window.grab_set()
+        
+        self.window.wait_window()
+        
+        return self.result
+
+    def yes_no(self, title:str, text:str, font:ctk.CTkFont):
+        """选择框"""
+        self.window.title(title)
+        
+        # 启动音效
+        playsound(path_config.get_sound_path('start.mp3'), block=False)
+        
+        # 选择框文本
+        content = ctk.CTkLabel(
+            self.window,
+            text=text, 
+            font=font
+        )
+        content.pack(pady=(5, 0))
+        
+        # 选择按钮容器
+        btn_frame = ctk.CTkFrame(
+            self.window,
+            fg_color="transparent"
+        )
+        btn_frame.pack(pady=(10, 0))
+        
+        yes_button = ctk.CTkButton(
+            btn_frame,
+            text="好的",
+            fg_color="#86aa19",
+            hover_color="#799b16",
+            command=lambda:self.on_confirm(True),
+            **self.btn_config
+        )
+        no_button = ctk.CTkButton(
+            btn_frame,
+            text="不要",
+            command=lambda:self.on_confirm(False),
+            **self.btn_config
+        )
+        yes_button.pack(side="left", padx=(0, 15))
+        no_button.pack(side="left")
+        
+        # 调整窗口大小
+        auto_label_window_width(content, self.window, 95)
+        center_window(self.window)
+        
+        # 模态化窗口
+        self.window.grab_set()
+        self.window.wait_window()
+        
+        return self.result

@@ -269,7 +269,7 @@ class App:
         # ====== 第七步：完成导入 ======
         # 完成后关闭进度条窗口
         progress_win.destroy()
-        playsound(path_config.get_sound_path('click.mp3'), block=False)
+        playsound(path_config.get_sound_path('finish.mp3'), block=False)
         Message(self.window).info(
             "完成",
             f"成功导入 {total} 个存档",
@@ -529,7 +529,7 @@ class Message:
         self.window.title(title)
         
         # 启动音效
-        playsound(path_config.get_sound_path('start.mp3'), block=False)
+        playsound(path_config.get_sound_path('message_info.mp3'), block=False)
         
         # 通知框文本
         content = ctk.CTkLabel(
@@ -567,7 +567,7 @@ class Message:
         self.window.title(title)
         
         # 启动音效
-        playsound(path_config.get_sound_path('start.mp3'), block=False)
+        playsound(path_config.get_sound_path('message_yes_no.mp3'), block=False)
         
         # 选择框文本
         content = ctk.CTkLabel(

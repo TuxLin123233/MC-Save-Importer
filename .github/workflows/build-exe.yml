@@ -27,12 +27,16 @@ jobs:
         run: |
           curl -L -o upx.zip https://github.com/upx/upx/releases/download/v5.1.1/upx-5.1.1-win64.zip
           unzip upx.zip
-          echo "UPX 下载完成，版本 5.1.1"
+          # 将 upx.exe 移动到项目根目录，方便调用
+          mv upx-5.1.1-win64/upx.exe upx.exe
+          # 验证 UPX 是否可用
+          ./upx.exe --version
+          echo "UPX 配置完成"
       
       - name: 打包成 exe
         run: |
           cd src
-          pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" --add-data="../img;img" --add-data="../fonts;fonts" --add-data="../sounds;sounds" --hidden-import=playsound3 --hidden-import=playsound3.__main__ --upx-dir="../upx-5.1.1-win64" main.py
+          pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" --add-data="../img;img" --add-data="../fonts;fonts" --add-data="../sounds;sounds" --hidden-import=playsound3 --hidden-import=playsound3.__main__ --upx-dir=".." main.py
       
       - name: 上传 exe 文件
         uses: actions/upload-artifact@v4
@@ -65,12 +69,17 @@ jobs:
         run: |
           curl -L -o upx.tar.xz https://github.com/upx/upx/releases/download/v5.1.1/upx-5.1.1-amd64_linux.tar.xz
           tar -xf upx.tar.xz
-          echo "UPX 下载完成，版本 5.1.1"
+          # 将 upx 可执行文件移动到项目根目录
+          mv upx-5.1.1-amd64_linux/upx upx
+          chmod +x upx
+          # 验证 UPX 是否可用
+          ./upx --version
+          echo "UPX 配置完成"
       
       - name: 打包成可执行文件
         run: |
           cd src
-          pyinstaller -F --name="savemanager" --add-data="../img:img" --add-data="../fonts:fonts" --add-data="../sounds:sounds" --hidden-import=playsound3 --hidden-import=playsound3.__main__ --upx-dir="../upx-5.1.1-amd64_linux" main.py
+          pyinstaller -F --name="savemanager" --add-data="../img:img" --add-data="../fonts:fonts" --add-data="../sounds:sounds" --hidden-import=playsound3 --hidden-import=playsound3.__main__ --upx-dir=".." main.py
       
       - name: 上传可执行文件
         uses: actions/upload-artifact@v4

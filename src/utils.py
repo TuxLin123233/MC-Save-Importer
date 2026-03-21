@@ -159,7 +159,16 @@ def auto_label_window_width(label:ctk.CTkLabel, window:ctk.CTk|ctk.CTkToplevel, 
     window.geometry(f"{text_width + 40}x{window_height}")    
 
 def is_minecraft_folder(minecraft_path) -> dict:
-    """判断是否为minecraft路径"""
+    """判断是否为minecraft路径
+
+    Args:
+        minecraft_path: 要检查的文件夹路径
+
+    Returns:
+        dict: 包含检查结果的字典
+            - find (bool): 是否为有效的.minecraft文件夹
+            - migrate (bool): 是否为版本迁移结构（存档在versions目录下）
+    """
     result:dict = {
         "find": False,
         "migrate": False

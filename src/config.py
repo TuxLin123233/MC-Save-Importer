@@ -6,6 +6,7 @@ import glob
 import json
 from pathlib import Path
 from tkinter import filedialog
+from playsound3 import playsound
 
 from PIL import Image
 import customtkinter as ctk

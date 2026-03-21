@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-windows:
+    name: 构建 Windows 版本
     runs-on: windows-latest
 
     steps:
@@ -38,3 +39,41 @@ jobs:
         with:
           name: SaveManager-Windows
           path: src/dist/*.exe
+
+  build-linux:
+    name: 构建 Linux 版本
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: 设置 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: 安装系统依赖
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk python3-dev
+      
+      - name: 安装 Python 依赖
+        run: |
+          pip install -r requirements.txt
+      
+      - name: 下载 UPX
+        run: |
+          curl -L -o upx.tar.xz https://github.com/upx/upx/releases/download/v5.1.1/upx-5.1.1-amd64_linux.tar.xz
+          tar -xf upx.tar.xz
+          echo "UPX 下载完成，版本 5.1.1"
+      
+      - name: 打包成可执行文件
+        run: |
+          cd src
+          pyinstaller -F --name="savemanager" --add-data="../img:img" --add-data="../fonts:fonts" --add-data="../sounds:sounds" --hidden-import=playsound3 --hidden-import=playsound3.__main__ --upx-dir="../upx-5.1.1-amd64_linux" main.py
+      
+      - name: 上传可执行文件
+        uses: actions/upload-artifact@v4
+        with:
+          name: SaveManager-Linux
+          path: src/dist/savemanager

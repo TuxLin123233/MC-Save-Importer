@@ -12,7 +12,7 @@ class App:
             None
         """
         
-        playsound(path_config.get_sound_path('start.mp3'), block=False)
+        _play_sound_safe(path_config.get_sound_path('start.mp3'), block=False)
         self.window = ctk.CTk()
         self.window.geometry("550x290")
         self.window.title("Minecraft 存档管理器")

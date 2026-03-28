@@ -290,8 +290,8 @@ class App:
         saves_win.geometry("400x300")
         saves_win.transient(self.window)   # 置顶于主窗口
         saves_win.resizable(False, False)
-        saves_win.update()  # 确保窗口已显示
-        saves_win.grab_set()
+        saves_win.after(100, lambda: saves_win.grab_set())
+        
         center_window(saves_win)  # 窗口居中
         
         # 创建可滚动框架
@@ -341,7 +341,9 @@ class App:
                     text_color="#434343",
                 )
                 version_name.pack(side="top", anchor="w", padx=(15, 0))                
-
+        
+        saves_win.update()  # 更新窗口
+        
     def donate(self):
         """赞助功能，显示捐赠窗口，提供微信和支付宝支付选项
         
@@ -361,7 +363,7 @@ class App:
         """
         donate_win = ctk.CTkToplevel(self.window)
         donate_win.title("感谢支持")
-        donate_win.geometry("340x230")
+        donate_win.geometry("340x250")
         donate_win.transient(self.window)   # 置顶于主窗口
         donate_win.resizable(False, False)
         center_window(donate_win)  # 窗口居中

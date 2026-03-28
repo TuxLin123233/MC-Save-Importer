@@ -11,6 +11,8 @@
 - 📋 **查看列表**：管理你的所有存档
 - ❤️ **赞助一下**：支持开发者
 
+![配色方案](./img/color_strip.png)
+
 ## 📥 下载
 
 前往 [Releases](https://github.com/TuxLin123233/Minecraft-Save-Manager/releases) 页面下载最新版本。

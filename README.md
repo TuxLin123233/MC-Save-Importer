@@ -71,7 +71,10 @@
 
 ## 📥 下载
 
-前往 [Releases](https://github.com/TuxLin123233/Minecraft-Save-Manager/releases) 页面下载最新版本。
+| 平台 | 链接 |
+|------|------|
+| GitHub Releases | [下载最新版本](https://github.com/TuxLin123233/Minecraft-Save-Manager/releases) |
+| BBSMC 资源站 | [存档管理器](https://bbsmc.net/software/minecraft-save-manager) |
 
 ---
 
@@ -106,62 +109,7 @@
 
 ## 📦 自行打包
 
-### 基础打包
-
-```bash
-# 安装依赖
-pip install -r requirements.txt
-
-# 打包
-cd src
-pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" \
-  --add-data="../img;img" --add-data="../icon;icon" \
-  --add-data="../fonts;fonts" --add-data="../sounds;sounds" main.py
-```
-
-### 使用 UPX 压缩（可选）
-
-UPX 是一个可执行文件压缩工具，可以显著减小 exe 文件的大小（通常可减少 50-70%）。
-
-<details>
-<summary>Windows 使用 UPX</summary>
-
-```bash
-# 1. 下载 UPX
-# 访问 https://github.com/upx/upx/releases 下载 Windows 版本
-# 解压后获得 upx.exe
-
-# 2. 使用 UPX 打包
-cd src
-pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" \
-  --add-data="../img;img" --add-data="../icon;icon" \
-  --add-data="../fonts;fonts" --add-data="../sounds;sounds" \
-  --upx-dir=".." main.py
-```
-
-</details>
-
-<details>
-<summary>Linux/macOS 使用 UPX</summary>
-
-```bash
-# 安装 UPX
-# Ubuntu/Debian: sudo apt-get install upx
-# macOS: brew install upx
-
-# 使用 UPX 打包
-cd src
-pyinstaller -F --noconsole --icon="../icon.ico" --name="存档管理器" \
-  --add-data="../img;img" --add-data="../icon;icon" \
-  --add-data="../fonts;fonts" --add-data="../sounds;sounds" main.py
-```
-
-</details>
-
-> ⚠️ **注意事项**:
-> - UPX 压缩会增加约 10-20% 的启动时间
-> - 某些杀毒软件可能会误报压缩后的 exe
-> - 如果压缩失败，可以去掉 `--upx-dir` 参数使用基础打包
+> 💡 详细打包教程查看 [Wiki - 开发文档](https://github.com/TuxLin123233/Minecraft-Save-Manager/wiki/开发文档)
 
 ---
 

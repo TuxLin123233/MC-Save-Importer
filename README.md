@@ -119,12 +119,12 @@
 
 ---
 
-## � 联系作者
+## 联系作者
 
 - 邮箱：linsifan123233@petailmail.com
 
 ---
 
-## �📄 许可证
+## 许可证
 
 MIT License © 2026 TuxLin123233
